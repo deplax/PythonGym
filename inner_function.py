@@ -8,3 +8,5 @@ def calculator(x):
 if __name__ == "__main__":
     print(calculator(10))
     print(calculator(10)(5))
+    f = calculator(10)
+    print(f(5))
