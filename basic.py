@@ -89,6 +89,26 @@ def operation_map():
     print(type(upper_list))
 
 
+def closure_attr():
+    print("=== closure attr ===")
+    # 1. global 변수를 사용하고 싶지 않을 때
+    # 2. 클래스를 사용하지 않기 위해서
+    # 3. 파이썬 데코레이터를 사용하기 위해
+    def closure():
+        x = 10
+        k = 50      # 내부에서 사용하지 않으면 클로저 변수가 되지 않는다.
+
+        def inner():
+            y = 20
+            return x + y
+
+        return inner
+
+    c = closure()
+    for attr in c.__closure__:
+        print(attr.cell_contents)
+
+
 def main():
     has_key_vs_in()
     print()
@@ -103,6 +123,9 @@ def main():
     print()
 
     operation_map()
+    print()
+
+    closure_attr()
     print()
 
 
