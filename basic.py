@@ -58,12 +58,28 @@ def scope():
     print(out_func())
 
 
+def return_function():
+    print("=== first class function ===")
+
+    def out_func(x):
+        def in_func(y):
+            return x * y
+        return in_func
+
+    print(out_func(10)(5))
+    func = out_func(10)
+    print(func(5))
+
+
+
 def main():
     has_key_vs_in()
     print()
     true_false()
     print()
     scope()
+    print()
+    return_function()
 
 
 if __name__ == "__main__":
