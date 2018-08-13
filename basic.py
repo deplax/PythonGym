@@ -34,6 +34,7 @@ def true_false():
 
 def scope():
     print("=== scope ===")
+
     # local -> enclosed -> global -> built-in
     # LEGB rule
     # 위 순서대로 검색합니다.
@@ -42,10 +43,9 @@ def scope():
         non_local = "NONLOCAL!"
 
         def in_func():
-
             # 아래 두줄이 없으면 로컬변수로 찾고 선언되지 않았으니 애러 출력.
             global global_value
-            nonlocal non_local      #nonlocal은 파이썬3 에만 있다.
+            nonlocal non_local  # nonlocal은 파이썬3 에만 있다.
 
             global_value += "!"
             non_local += "!"
@@ -60,11 +60,12 @@ def scope():
 
 def return_function():
     print("=== first class function ===")
-    # 별건 없고 그냥 함수 자체 리턴 됩니다.
 
+    # 별건 없고 그냥 함수 자체 리턴 됩니다.
     def out_func(x):
         def in_func(y):
             return x * y
+
         return in_func
 
     print(out_func(10)(5))
@@ -72,15 +73,37 @@ def return_function():
     print(func(5))
 
 
+def operation_map():
+    print("=== map ===")
+
+    lower_list = ["python", "python2", "python3"]
+
+    # 맵 연산 됩니다.
+    def convert(data):
+        return data.upper()
+
+    upper_list = map(convert, lower_list)
+    print(lower_list)
+    print(list(upper_list))
+    print(upper_list)
+    print(type(upper_list))
+
 
 def main():
     has_key_vs_in()
     print()
+
     true_false()
     print()
+
     scope()
     print()
+
     return_function()
+    print()
+
+    operation_map()
+    print()
 
 
 if __name__ == "__main__":
