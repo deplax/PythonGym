@@ -34,7 +34,6 @@ def true_false():
 
 def scope():
     print("=== scope ===")
-
     # local -> enclosed -> global -> built-in
     # LEGB rule
     # 위 순서대로 검색합니다.
@@ -43,9 +42,10 @@ def scope():
         non_local = "NONLOCAL!"
 
         def in_func():
+
             # 아래 두줄이 없으면 로컬변수로 찾고 선언되지 않았으니 애러 출력.
             global global_value
-            nonlocal non_local  # nonlocal은 파이썬3 에만 있다.
+            nonlocal non_local      #nonlocal은 파이썬3 에만 있다.
 
             global_value += "!"
             non_local += "!"
