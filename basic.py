@@ -109,6 +109,29 @@ def closure_attr():
         print(attr.cell_contents)
 
 
+def argument():
+    print("=== *args **kargs ===")
+    args = ["red", "blue", "first", "second"]
+    kwargs = {"red": "color", "blue": "color", "first": "number", "second": "number"}
+
+    # 고정인자 가변인자 순서를 준수해야 함.
+    def arg_test(name, *args, **kwargs):
+        print("fixed argument : %s" % name)
+
+        for arg in args:
+            print("argument : %s" % arg)
+
+        for keyword, arg in kwargs.items():
+            print("argument keyword : %s, arg : %s" % (keyword, arg))
+
+
+    arg_test("python", *args, **kwargs)
+    print()
+
+    arg_test("python", "red", "blue", "green", red="color", blue="color")
+
+
+
 def main():
     has_key_vs_in()
     print()
@@ -126,6 +149,9 @@ def main():
     print()
 
     closure_attr()
+    print()
+
+    argument()
     print()
 
 
