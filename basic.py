@@ -131,6 +131,26 @@ def argument():
     arg_test("python", "red", "blue", "green", red="color", blue="color")
 
 
+def partial_application_cloure():
+
+    def partial(func, *partial_args):
+
+        def wrapper(*extra_args):
+            args = list(partial_args)
+            args.extend(extra_args)
+            return func(*args)
+        return wrapper
+
+    def logging(year, month, day, title, content):
+        print("%s-%s-%s %s:%s" % (year, month, day, title, content))
+
+    logging("2017", "12", "28", "python2", "End of suppert in 2020")
+    logging("2017", "12", "28", "python3", "Updating")
+
+    f = partial(logging, "2017", "12", "28")
+    f("python2", "End of support in 2020")
+    f("python3", "Updating")
+
 
 def main():
     has_key_vs_in()
@@ -152,6 +172,9 @@ def main():
     print()
 
     argument()
+    print()
+
+    partial_application_cloure()
     print()
 
 
