@@ -131,7 +131,8 @@ def argument():
     arg_test("python", "red", "blue", "green", red="color", blue="color")
 
 
-def partial_application_cloure():
+def partial_application_closure():
+    print("=== partial_application_closure ===")
 
     def partial(func, *partial_args):
 
@@ -151,6 +152,18 @@ def partial_application_cloure():
     f("python2", "End of support in 2020")
     f("python3", "Updating")
 
+
+def partial_application_with_functools():
+    print("=== partial_application_with_functools ===")
+
+    from functools import partial
+
+    def logging(year, month, day, title, content):
+        print("%s-%s-%s %s:%s" % (year, month, day, title, content))
+
+    f = partial(logging, "2017", "12", "28")
+    f("python2", "End of support in 2020")
+    f("python3", "Updating")
 
 def main():
     has_key_vs_in()
@@ -174,7 +187,10 @@ def main():
     argument()
     print()
 
-    partial_application_cloure()
+    partial_application_closure()
+    print()
+
+    partial_application_with_functools()
     print()
 
 
