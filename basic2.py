@@ -42,11 +42,24 @@ def test_exception():
     read_file("basic2.py???")
 
 
+def test_range():
+    print("=== range ===")
+
+    import sys
+    print("type : %s" % type(range(1000)))
+    print("size : %d" % sys.getsizeof(range(1000)))
+
+    # python3 에서는 xrange가 사라짐 기본 range가 제너레이터.
+
+
 def main():
     test_if()
     print()
 
     test_exception()
+    print()
+
+    test_range()
     print()
 
 
