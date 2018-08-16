@@ -21,8 +21,32 @@ def test_if():
     print(check_boolean_ternary_operator("string"))
 
 
+def test_exception():
+    print("=== exception ===")
+
+    def read_file(file_name):
+        try:
+            f = open(file_name, "r")
+        except:
+            # 에러나면 여기로
+            print("File open error")
+        else:
+            # 에러가 나지 않았을 때 실행하지만 에러 감지를 하지는 않는 곳. 에러감지를 하지 않아 성능에 이점이 있다.
+            # try: 의 변수를 사용할 수 있다.
+            # print(f.read())
+            print("read file")
+        finally:
+            print("End file read")
+
+    read_file("basic2.py")
+    read_file("basic2.py???")
+
+
 def main():
     test_if()
+    print()
+
+    test_exception()
     print()
 
 
