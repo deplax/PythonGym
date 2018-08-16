@@ -70,6 +70,52 @@ def test_enumerate():
     get_index_enumerate_method()
 
 
+def test_decorator():
+    def deco(func):
+        def wrapper():
+            print("before")
+            ret = func()
+            print("after")
+            return ret
+
+        return wrapper
+
+    @deco
+    def base():
+        print("base function")
+
+    def base2():
+        print("base function")
+
+    base()
+    print()
+    deco(base2)()
+
+    # 실행 결과는 2가지가 동일하다.
+    # 데코레이터는 클래스나 함수를 인자로 받는다.
+
+
+def test_decorator_clock():
+    import time
+
+    def measure_run_time(func):
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            result = func(*args, **kwargs)
+            end = time.time()
+
+            print("'%s' function running time : %s" % (func.__name__, end - start))
+            return result
+
+        return wrapper
+
+    @measure_run_time
+    def worker(delay_time):
+        time.sleep(delay_time)
+
+    worker(0.5)
+
+
 def main():
     test_if()
     print()
@@ -81,6 +127,12 @@ def main():
     print()
 
     test_enumerate()
+    print()
+
+    test_decorator()
+    print()
+
+    test_decorator_clock()
     print()
 
 
