@@ -34,6 +34,7 @@ def true_false():
 
 def scope():
     print("=== scope ===")
+
     # local -> enclosed -> global -> built-in
     # LEGB rule
     # 위 순서대로 검색합니다.
@@ -42,10 +43,9 @@ def scope():
         non_local = "NONLOCAL!"
 
         def in_func():
-
             # 아래 두줄이 없으면 로컬변수로 찾고 선언되지 않았으니 애러 출력.
             global global_value
-            nonlocal non_local      #nonlocal은 파이썬3 에만 있다.
+            nonlocal non_local  # nonlocal은 파이썬3 에만 있다.
 
             global_value += "!"
             non_local += "!"
@@ -91,12 +91,13 @@ def operation_map():
 
 def closure_attr():
     print("=== closure attr ===")
+
     # 1. global 변수를 사용하고 싶지 않을 때
     # 2. 클래스를 사용하지 않기 위해서
     # 3. 파이썬 데코레이터를 사용하기 위해
     def closure():
         x = 10
-        k = 50      # 내부에서 사용하지 않으면 클로저 변수가 되지 않는다.
+        k = 50  # 내부에서 사용하지 않으면 클로저 변수가 되지 않는다.
 
         def inner():
             y = 20
@@ -124,7 +125,6 @@ def argument():
         for keyword, arg in kwargs.items():
             print("argument keyword : %s, arg : %s" % (keyword, arg))
 
-
     arg_test("python", *args, **kwargs)
     print()
 
@@ -135,11 +135,11 @@ def partial_application_closure():
     print("=== partial_application_closure ===")
 
     def partial(func, *partial_args):
-
         def wrapper(*extra_args):
             args = list(partial_args)
             args.extend(extra_args)
             return func(*args)
+
         return wrapper
 
     def logging(year, month, day, title, content):
@@ -164,6 +164,7 @@ def partial_application_with_functools():
     f = partial(logging, "2017", "12", "28")
     f("python2", "End of support in 2020")
     f("python3", "Updating")
+
 
 def main():
     has_key_vs_in()
