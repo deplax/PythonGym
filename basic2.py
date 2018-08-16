@@ -97,6 +97,7 @@ def test_decorator():
 
 def test_decorator_clock():
     import time
+    import datetime
 
     def measure_run_time(func):
         def wrapper(*args, **kwargs):
@@ -109,9 +110,28 @@ def test_decorator_clock():
 
         return wrapper
 
+    def parameter_logger(func):
+        def wrapper(*args, **kwargs):
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            print("[%s] args : %s, kwargs : %s" % (timestamp, args, kwargs))
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    # 데코레이터가 중첩되어 있을 경우 아래부터 순서대로 실행
     @measure_run_time
+    @parameter_logger
     def worker(delay_time):
         time.sleep(delay_time)
+
+    def worker2(delay_time):
+        time.sleep(delay_time)
+
+    # 위의 중첩 데코레이터를 풀어쓰면 이렇게 된다.
+    f = worker2
+    f2 = parameter_logger(f)
+    f3 = measure_run_time(f2)
+    f3(0.5)
 
     worker(0.5)
 
