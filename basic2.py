@@ -177,6 +177,33 @@ def test_decorator_wrap():
     worker(0.5)
 
 
+def test_class_decorator():
+    print("=== class decorator ===")
+
+    import time
+    from functools import update_wrapper
+
+    class MeasureRuntime:
+
+        def __init__(self, f):
+            self.func = f
+            update_wrapper(self, self.func)
+
+        def __call__(self, *args, **kwargs):
+            start = time.time()
+            result = self.func(*args, **kwargs)
+            end = time.time()
+            print("'%s' function running time : %s" % (self.func.__name__, end - start))
+
+            return result
+
+    @MeasureRuntime
+    def worker(delay_time):
+        time.sleep(delay_time)
+
+    worker(0.5)
+
+
 def main():
     test_if()
     print()
@@ -197,6 +224,9 @@ def main():
     print()
 
     test_decorator_wrap()
+    print()
+
+    test_class_decorator()
     print()
 
 
