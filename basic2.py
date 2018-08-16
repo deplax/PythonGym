@@ -52,6 +52,24 @@ def test_range():
     # python3 에서는 xrange가 사라짐 기본 range가 제너레이터.
 
 
+def test_enumerate():
+    print("=== enumerate ===")
+    alphabet_list = ["a", "b", "c"]
+
+    def get_index_basic_method():
+        i = 0
+        for ch in alphabet_list:
+            print("%d : %s" % (i, ch))
+            i += 1
+
+    def get_index_enumerate_method():
+        for i, ch in enumerate(alphabet_list):
+            print("%d : %s" % (i, ch))
+
+    get_index_basic_method()
+    get_index_enumerate_method()
+
+
 def main():
     test_if()
     print()
@@ -60,6 +78,9 @@ def main():
     print()
 
     test_range()
+    print()
+
+    test_enumerate()
     print()
 
 
