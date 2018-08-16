@@ -71,6 +71,8 @@ def test_enumerate():
 
 
 def test_decorator():
+    print("=== decorator ===")
+
     def deco(func):
         def wrapper():
             print("before")
@@ -96,6 +98,8 @@ def test_decorator():
 
 
 def test_decorator_clock():
+    print("=== nested decorator ===")
+
     import time
     import datetime
 
@@ -136,6 +140,43 @@ def test_decorator_clock():
     worker(0.5)
 
 
+def test_decorator_wrap():
+    print("=== nested decorator by functools ===")
+
+    import time
+    import datetime
+    from functools import wraps
+
+    def measure_run_time(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            result = func(*args, **kwargs)
+            end = time.time()
+
+            print("'%s' function running time : %s" % (func.__name__, end - start))
+            return result
+
+        return wrapper
+
+    def parameter_logger(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            print("[%s] args : %s, kwargs : %s" % (timestamp, args, kwargs))
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    # 데코레이터가 중첩되어 있을 경우 아래부터 순서대로 실행
+    @measure_run_time
+    @parameter_logger
+    def worker(delay_time):
+        time.sleep(delay_time)
+
+    worker(0.5)
+
+
 def main():
     test_if()
     print()
@@ -153,6 +194,9 @@ def main():
     print()
 
     test_decorator_clock()
+    print()
+
+    test_decorator_wrap()
     print()
 
 
