@@ -135,9 +135,9 @@ def test_decorator_clock():
     f = worker2
     f2 = parameter_logger(f)
     f3 = measure_run_time(f2)
-    f3(0.5)
+    f3(0.1)
 
-    worker(0.5)
+    worker(0.1)
 
 
 def test_decorator_wrap():
@@ -174,7 +174,7 @@ def test_decorator_wrap():
     def worker(delay_time):
         time.sleep(delay_time)
 
-    worker(0.5)
+    worker(0.1)
 
 
 def test_class_decorator():
@@ -201,7 +201,45 @@ def test_class_decorator():
     def worker(delay_time):
         time.sleep(delay_time)
 
-    worker(0.5)
+    worker(0.1)
+
+
+def test_class_decorator_parameter():
+    print("=== class decorator parameter ===")
+
+    import time
+    from functools import wraps
+
+    class MeasureRuntime:
+
+        def __init__(self, active_state):
+            self.measure_active = active_state
+
+        def __call__(self, func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                if self.measure_active is False:
+                    return func(*args, **kwargs)
+
+                start = time.time()
+                result = func(*args, **kwargs)
+                end = time.time()
+                print("'%s' function running time : %s" % (func.__name__, end - start))
+
+                return result
+
+            return wrapper
+
+    @MeasureRuntime(True)
+    def active_worker(delay_time):
+        time.sleep(delay_time)
+
+    @MeasureRuntime(False)
+    def non_active_worker(delay_time):
+        time.sleep(delay_time)
+
+    active_worker(0.1)
+    non_active_worker(0.1)
 
 
 def main():
@@ -227,6 +265,9 @@ def main():
     print()
 
     test_class_decorator()
+    print()
+
+    test_class_decorator_parameter()
     print()
 
 
