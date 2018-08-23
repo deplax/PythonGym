@@ -120,6 +120,61 @@ def test_generator4():
         print(i)
 
 
+def test_comprehension():
+    print("=== comprehension ===")
+    v_list = [1, 2, 3]
+    v_dict_key = ["korea", "japan", "china"]
+    v_dict_value = [82, 81, 86]
+
+    def print_list_with_comprehension():
+        v_list_comprehension = [x * x for x in v_list]
+        print(v_list_comprehension)
+
+    def print_list_with_for():
+        result = []
+        for v in v_list:
+            result.append(v * v)
+        print(result)
+
+    def print_dict_with_comprehension():
+        v_dict_comprehension = {k: v for k, v in zip(v_dict_key, v_dict_value)}
+        print(v_dict_comprehension)
+
+    def print_dict_with_for():
+        result = {}
+        for k, v in zip(v_dict_key, v_dict_value):
+            result[k] = v
+        print(result)
+
+    print_list_with_comprehension()
+    print_list_with_for()
+    print_dict_with_comprehension()
+    print_dict_with_for()
+
+
+def test_comprehension_generator():
+    print("=== comprehension generator ===")
+    SAMPLE_LIST = [1, 2, 3, 4, 5]
+
+    # [], {} 말고 ()를 사용하면 제너레이터가 생성된다.
+    def generate_sample_list():
+        result = (x * x for x in SAMPLE_LIST)
+        print(result)
+        return result
+
+    def generate_list_by_range():
+        result = (i * i for i in range(1, 6))
+        print(result)
+        return result
+
+    def print_generator(items):
+        for item in items:
+            print(item)
+
+    print_generator(generate_sample_list())
+    print_generator(generate_list_by_range())
+
+
 def main():
     test_iterator()
     print()
@@ -138,6 +193,11 @@ def main():
 
     test_generator4()
     print()
+
+    test_comprehension()
+    print()
+
+    test_comprehension_generator()
 
 
 if __name__ == "__main__":
