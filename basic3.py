@@ -175,6 +175,31 @@ def test_comprehension_generator():
     print_generator(generate_list_by_range())
 
 
+def test_lazy_evaluation():
+    print("=== lazy evaluation ===")
+
+    import time
+
+    def wait_return(num):
+        print("sleep")
+        time.sleep(0.5)
+        return num
+
+    def print_items(items):
+        for i in items:
+            print(i)
+
+    # 이 시점에 함수가 실행된다.
+    iterator_list = [wait_return(i) for i in range(3)]
+    print_items(iterator_list)
+
+    print()
+
+    # 제너레이터가 생성되고 함수는 호출되지 않는다.
+    iterator_list = (wait_return(i) for i in range(3))
+    print_items(iterator_list)
+
+
 def main():
     test_iterator()
     print()
@@ -198,6 +223,10 @@ def main():
     print()
 
     test_comprehension_generator()
+    print()
+
+    test_lazy_evaluation()
+    print()
 
 
 if __name__ == "__main__":
