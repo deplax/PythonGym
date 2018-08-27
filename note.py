@@ -19,6 +19,13 @@ def odd_sum(num):
     return sum(range(1, num + 1, 2))
 
 
+def odd_sum2(num):
+    result = 0
+    for i in range(1, int(num / 2) + 1):
+        result += 2 * i - 1
+    return result
+
+
 def main():
     recursive_multi(2, 1)
     print()
@@ -26,11 +33,13 @@ def main():
     print(recursive_multi2(2, 1))
     print()
 
-    generate_multi(2)
+    generate_multi(4)
     print()
 
     print(odd_sum(10))
     print()
+
+    print(odd_sum2(100))
 
 
 if __name__ == "__main__":
