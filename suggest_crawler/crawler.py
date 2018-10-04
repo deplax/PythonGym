@@ -1,33 +1,111 @@
-import os
+
+import logging
+import collections
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from datetime import datetime
 from google.cloud import bigquery
 
-# GCP_KEY_PATH = os.path.join(os.path.dirname(__file__), './gcpkey.json')
+logging.basicConfig(level=logging.INFO, format="[%(asctime)s] [%(levelname)-8s] %(message)s")
 project_id = 'study-jam-whale'
 dataSet_name = 'keyword'
 table_name = 'keyword'
 
-API_KEY = "/Users/whale/Downloads/bq.json"
+API_KEY = "./bq.json"
+BROWSER_PATH = "./chromedriver"
 
-start_keyword = "아이유"
+CRAWL_INFO = {
+    "google": {
+        "url": "https://www.google.com/search?q={keyword}",
+        "query_field_name": "q",
+        "query_search_selector": "#mKlEF",
+        "related_query_selector": ".card-section > div > p"
+    },
+    "naver": {
+        "url": "https://search.naver.com/search.naver?query={keyword}",
+        "query_field_name": "query",
+        "query_search_selector": ".greenwindow > .bt_search",
+        "related_query_selector": "._related_keyword_ul > li"
+    },
+    "daum": {
+        "url": "https://search.daum.net/search?w=tot&q={keyword}",
+        "query_field_name": "q",
+        "query_search_selector": "#daumBtnSearch",
+        "related_query_selector": "#netizen_lists_top > span"
+    }
+}
 
 
 class Crawler:
-    def __init__(self, start_keyword):
-        self.urlList = []
-        self.keyword_set = {start_keyword}
-        pass
+    def __init__(self, service, start_keyword):
+        self.service = service
+        self.keyword = start_keyword
+        self.crawl_data = CRAWL_INFO[self.service]
+        self.count = 0
+        self.bq = BigQuery()
+        if not self.crawl_data:
+            raise KeyError
+
+        self.keyword_queue = collections.deque([])
+        self.extracted_keyword_set = {start_keyword}
+
+        self.driver = webdriver.Chrome(BROWSER_PATH)
 
     def start_crawl(self):
-        pass
+        self.open_start_page(self.crawl_data["url"].format(**{"keyword": self.keyword}))
+
+        # 첫번째 키워드 별도 등록
+        self.save_bigQuery(None, [self.keyword])
+
+        html = self.get_html(self.keyword)
+        keyword_list = self.get_keywords(html)
+        self.keyword_queue.extend(keyword_list)
+        self.extracted_keyword_set.add(self.keyword)
+
+        self.count += len(keyword_list)
+        self.save_bigQuery(self.keyword, keyword_list)
+        self.keyword = self.keyword_queue.popleft()
+        while True:
+            try:
+                self.crawl(self.keyword)
+            except:
+                self.driver.close()
+                self.driver = webdriver.Chrome(BROWSER_PATH)
+                self.open_start_page(self.crawl_data["url"].format(**{"keyword": self.keyword}))
+                continue
+
+    def crawl(self, keyword):
+        while self.keyword_queue:
+            logging.info("current_keyword : %s, queue_size : %d, query_key_size : %d, keyword_count : %d" %
+                         (keyword, len(self.keyword_queue), len(self.extracted_keyword_set), self.count))
+            if keyword in self.extracted_keyword_set:
+                keyword = self.keyword_queue.popleft()
+                continue
+            html = self.get_html(keyword)
+            keyword_list = self.get_keywords(html)
+            self.keyword_queue.extend(keyword_list)
+            self.extracted_keyword_set.add(keyword)
+
+            self.count += len(keyword_list)
+            self.save_bigQuery(keyword, keyword_list)
+            keyword = self.keyword_queue.popleft()
+
+    def get_html(self, keyword):
+        query_field = self.driver.find_element_by_name(self.crawl_data["query_field_name"])
+        query_field.clear()
+        query_field.send_keys(keyword)
+        self.driver.find_element_by_css_selector(self.crawl_data["query_search_selector"]).click()
+        return self.driver.page_source
 
     def get_keywords(self, html):
-        pass
+        soup = BeautifulSoup(html, 'html.parser')
+        return list(map((lambda x: x.text), soup.select(self.crawl_data["related_query_selector"])))
 
-    def save_bigQuery(self):
-        pass
+    def open_start_page(self, url):
+        self.driver.get(url)
+
+    def save_bigQuery(self, keyword, keyword_list):
+        self.bq.save_rows(list(map((lambda x: (self.service, keyword, x, datetime.now())), keyword_list)))
 
     def save_file(self):
         pass
@@ -45,43 +123,19 @@ class BigQuery:
             bigquery.SchemaField('timeStamp', 'TIMESTAMP', mode='REQUIRED')
         ]
 
-    def save_single(self, service, parents_keyword, keyword, timestamp):
+    def save_row(self, service, parents_keyword, keyword, timestamp):
         self.client.insert_rows(self.table, [(service, parents_keyword, keyword, timestamp)], self.schema)
 
-    def save(self, data_list):
-        self.client.insert_rows(self.table, data_list, self.schema)
+    def save_rows(self, data_list):
+        if data_list:
+            self.client.insert_rows(self.table, data_list, self.schema)
 
 
 def main():
-    # init
+    logging.info("crawler start!")
 
-    # bq = BigQuery()
-    # bq.save_single("google", "아이유", "아이유사진", datetime.now())
-
-    # crawler = Crawler(start_keyword)
-    # crawler.start_crawl()
-
-    driver = webdriver.Chrome('/Users/whale/Downloads/chromedriver')
-    try:
-        driver.get("http://www.google.com")
-        driver.find_element_by_name("q").send_keys(start_keyword)
-        driver.find_element_by_name("btnK").click()
-        html = driver.page_source
-        soup = BeautifulSoup(html, 'html.parser')
-        soup.select(".card-section > p > a")
-
-    finally:
-        driver.close()
-
-    print(html)
-
-    # driver.get("http://www.naver.com")
-
-    # 메인 페이지를 방문한다.
-    # 연관 검색어를 set 에 넣는다.
-    # 연관 검색어를 DB에 저장한다.
-    # 연관 검색어 페이지를 방문한다.
-    # 리스트에 없는
+    crawler = Crawler("naver", "아이유")
+    crawler.start_crawl()
 
 
 if __name__ == "__main__":
