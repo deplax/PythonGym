@@ -9,7 +9,7 @@ from google.cloud import bigquery
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] [%(levelname)-8s] %(message)s")
 project_id = 'study-jam-whale'
 dataSet_name = 'keyword'
-table_name = 'keyword'
+table_name = 'naver'
 
 API_KEY = "./bq.json"
 BROWSER_PATH = "./chromedriver"
